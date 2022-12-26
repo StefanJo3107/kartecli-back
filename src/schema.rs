@@ -1,54 +1,44 @@
 table! {
-    lokacija (id) {
-        id -> Int4,
-        naziv -> Varchar,
+    games (game_id) {
+        game_id -> Int4,
+        home_team_id -> Int4,
+        guest_team_id -> Int4,
+        date -> Varchar,
+        basic_tickets -> Int4,
+        vip_tickets -> Int4,
     }
 }
 
 table! {
-    partija (partija_id) {
-        partija_id -> Int4,
-        runda -> Int4,
-        beli_id -> Int4,
-        crni_id -> Int4,
-        pgn -> Varchar,
-        rezultat -> Varchar,
-        otvaranje -> Varchar,
-        datum -> Nullable<Varchar>,
-        turnir_id -> Int4,
+    national_teams (national_team_id) {
+        national_team_id -> Int4,
+        name -> Varchar,
     }
 }
 
 table! {
-    sahista (sahista_id) {
-        sahista_id -> Int4,
-        titula_fide -> Varchar,
-        elo -> Int4,
-        ime -> Varchar,
-        prezime -> Varchar,
-        lokacija_id -> Nullable<Int4>,
-        sahista_slika -> Nullable<Varchar>,
+    reservations (reservation_id) {
+        reservation_id -> Int4,
+        user_id -> Int4,
+        game_id -> Int4,
+        basic_tickets -> Int4,
+        vip_tickets -> Int4,
     }
 }
 
 table! {
-    turnir (turnir_id) {
-        turnir_id -> Int4,
-        turnir_naziv -> Varchar,
-        turnir_datum -> Varchar,
-        broj_rundi -> Int4,
-        lokacija_id -> Nullable<Int4>,
-        turnir_slika -> Nullable<Varchar>,
+    users (user_id) {
+        user_id -> Int4,
+        username -> Varchar,
+        password -> Varchar,
+        name -> Varchar,
+        surname -> Varchar,
+        identity_number -> Varchar,
+        email -> Varchar,
     }
 }
 
-joinable!(partija -> turnir (turnir_id));
-joinable!(sahista -> lokacija (lokacija_id));
-joinable!(turnir -> lokacija (lokacija_id));
+joinable!(reservations -> games (game_id));
+joinable!(reservations -> users (user_id));
 
-allow_tables_to_appear_in_same_query!(
-    lokacija,
-    partija,
-    sahista,
-    turnir,
-);
+allow_tables_to_appear_in_same_query!(games, national_teams, reservations, users,);

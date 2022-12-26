@@ -11,7 +11,6 @@ pub mod schema;
 use diesel::pg::PgConnection;
 use diesel::r2d2::*;
 use dotenv::dotenv;
-use models::Lokacija;
 use std::env;
 
 pub fn establish_connection() -> Pool<ConnectionManager<PgConnection>> {

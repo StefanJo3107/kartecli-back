@@ -7,10 +7,10 @@ use diesel::{
 
 use crate::fianchetto::Fianchetto;
 
-pub mod lokacija_controller;
-pub mod partija_controller;
-pub mod sahista_controller;
-pub mod turnir_controller;
+pub mod game_controller;
+pub mod reservation_controller;
+pub mod team_controller;
+pub mod user_controller;
 
 pub trait Controller {
     fn routes(app: &mut Fianchetto, conn_pool: Arc<Pool<ConnectionManager<PgConnection>>>);

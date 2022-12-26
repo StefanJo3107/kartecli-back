@@ -1,4 +1,0 @@
-CREATE TABLE lokacija (
-    id SERIAL PRIMARY KEY,
-    naziv VARCHAR NOT NULL
-)
