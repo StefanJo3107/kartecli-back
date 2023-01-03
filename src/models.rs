@@ -15,7 +15,7 @@ pub struct User {
     pub email: String,
 }
 
-#[derive(Insertable, Deserialize)]
+#[derive(Insertable, Deserialize, Debug)]
 #[table_name = "users"]
 pub struct NewUser {
     pub username: String,
@@ -77,7 +77,7 @@ pub struct UpdateGame {
     pub vip_tickets: i32,
 }
 
-#[derive(Identifiable, Queryable, Serialize, Associations)]
+#[derive(Identifiable, Queryable, Serialize, Associations, Debug)]
 #[primary_key(reservation_id)]
 #[belongs_to(User, foreign_key = "user_id")]
 #[belongs_to(Game, foreign_key = "game_id")]

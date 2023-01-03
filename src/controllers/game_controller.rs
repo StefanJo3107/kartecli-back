@@ -65,11 +65,11 @@ impl Controller for GameController {
 }
 
 impl GameController {
-    fn update_game(conn: &PgConnection, id: i32, game: UpdateGame) -> Result<Game, Error> {
+    pub fn update_game(conn: &PgConnection, id: i32, game: UpdateGame) -> Result<Game, Error> {
         diesel::update(games::table.find(id))
             .set((
-                games::dsl::vip_tickets.eq(game.vip_tickets),
-                games::dsl::basic_tickets.eq(game.basic_tickets),
+                games::dsl::vip_tickets.eq(games::dsl::vip_tickets - game.vip_tickets),
+                games::dsl::basic_tickets.eq(games::dsl::basic_tickets - game.basic_tickets),
             ))
             .get_result(conn)
     }

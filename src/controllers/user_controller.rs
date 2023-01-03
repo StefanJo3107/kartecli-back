@@ -3,6 +3,7 @@ use std::sync::Arc;
 use diesel::prelude::*;
 use diesel::r2d2::{ConnectionManager, Pool};
 use diesel::result::Error;
+use pwhash::bcrypt;
 use serde_json::json;
 
 use super::super::fianchetto::response::Response;
@@ -16,14 +17,21 @@ pub struct UserController;
 impl Controller for UserController {
     fn routes(app: &mut Fianchetto, conn_pool: Arc<Pool<ConnectionManager<PgConnection>>>) {
         let conn = Arc::clone(&conn_pool);
-        app.get("/user/:id", move |_, params| {
-            let user_id: i32 = params.find("id").unwrap().parse()?;
+        app.get("/user/:username/:password", move |_, params| {
+            let username: String = params.find("username").unwrap().parse()?;
+            let password: String = params.find("password").unwrap().parse()?;
             let result: User;
             match users::table
-                .filter(users::dsl::user_id.eq(user_id))
+                .filter(users::dsl::username.eq(username))
                 .first::<User>(&conn.get().unwrap())
             {
-                Ok(res) => result = res,
+                Ok(res) => {
+                    if bcrypt::verify(password, &res.password) {
+                        result = res;
+                    } else {
+                        return Ok(Response::not_found(String::from("{\"err\":\"NotFound\"}")));
+                    }
+                }
                 Err(err) => {
                     let err = err.to_string();
                     let err_json = json!({ "err": err });
@@ -36,8 +44,23 @@ impl Controller for UserController {
         });
 
         let conn = Arc::clone(&conn_pool);
+        app.get("/check/:username", move |_, params| {
+            let username: String = params.find("username").unwrap().parse()?;
+
+            match users::table
+                .filter(users::dsl::username.eq(username))
+                .first::<User>(&conn.get().unwrap())
+            {
+                Ok(_) => return Ok(Response::ok(String::from("{\"status\": true}"))),
+                Err(_) => return Ok(Response::ok(String::from("{\"status\": false}"))),
+            }
+        });
+
+        let conn = Arc::clone(&conn_pool);
         app.post("/user", move |req, _| {
-            let new_user: NewUser = serde_json::from_value(req.content)?;
+            let mut new_user: NewUser = serde_json::from_value(req.content)?;
+            let hashed = bcrypt::hash(new_user.password)?;
+            new_user.password = hashed;
             let user: User = UserController::create_user(&conn.get().unwrap(), new_user)?;
 
             let user_json = serde_json::to_string(&user)?;

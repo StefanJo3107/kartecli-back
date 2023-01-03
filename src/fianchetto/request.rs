@@ -28,11 +28,11 @@ impl<'a> Request<'a> {
         let mut content = String::from("");
 
         for line in lines {
-            if line.contains("Content-Type") {
+            if line.to_lowercase().contains("content-type") {
                 let content_type_vec: Vec<&str> = line.split(":").collect();
                 content_type = content_type_vec.get(1).unwrap();
                 content_type = &content_type[1..];
-            } else if line.contains("Content-Length") {
+            } else if line.to_lowercase().contains("content-length") {
                 let content_length_vec: Vec<&str> = line.split(":").collect();
                 let mut length: &str = content_length_vec.get(1).unwrap();
                 length = &length[1..];
@@ -45,6 +45,7 @@ impl<'a> Request<'a> {
                 content += line;
             }
         }
+
         let mut content_json = Value::Null;
         if content_type.to_lowercase().contains("json") {
             let json = content.trim_matches('\u{0}');

@@ -12,3 +12,4 @@ chrono = "0.4"
 serde = { version = "1.0.133", features = ["derive"] }
 diesel = { version = "1.4.4", features = ["postgres", "r2d2"] }
 dotenv = "0.15.0"
+pwhash = "1"
